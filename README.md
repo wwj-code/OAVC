@@ -2,6 +2,7 @@
 
 <p align="center">
   <a href="https://arxiv.org/abs/2609.06288"><img src="https://img.shields.io/badge/arXiv-2609.06288-b31b1b.svg" alt="arXiv"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License: MIT"></a>
 </p>
 
 Official implementation of **Object-Aware Velocity Control (OAVC)**, a training-free method for text-guided image and video editing with rectified-flow models (Stable Diffusion 3.5, FLUX.1-dev, Wan2.1).
@@ -113,6 +114,10 @@ Scripts for the four DAVIS sequences are in `video/scripts/`. The object support
 ## Acknowledgements
 
 OAVC is built on [DNAEdit](https://github.com/xiechenxi99/DNAEdit_code). The video code is built on [Wan2.1](https://github.com/Wan-Video/Wan2.1) (Apache-2.0, see `video/wan/LICENSE.txt`). Object supports use [SAM3](https://github.com/facebookresearch/sam3), and evaluation follows [PIE-Bench](https://github.com/cure-lab/PnPInversion). We thank the authors for releasing their code.
+
+## License
+
+This project is released under the [MIT License](LICENSE). Code adapted from third-party projects keeps its original terms: the Wan2.1 code in `video/wan/` is under Apache-2.0 (`video/wan/LICENSE.txt`), and parts derived from DNAEdit remain credited to its authors.
 
 ## Citation
 
