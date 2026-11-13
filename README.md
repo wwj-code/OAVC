@@ -53,7 +53,12 @@ Velocity-based editors apply the prompt-induced velocity change to the whole lat
   <em>"A man is hiking on the rock." → "A woman is hiking on the rock"</em>
 </p>
 
-Full-quality MP4s: [bear](assets/videos/video_bear.mp4) · [car](assets/videos/video_car.mp4) · [hike](assets/videos/video_hike.mp4)
+<p align="center">
+  <img src="assets/videos/video_paragliding.gif" width="80%" alt="DAVIS paragliding: paraglider removed"><br>
+  <em>Delete the paraglider</em>
+</p>
+
+Full-quality MP4s: [bear](assets/videos/video_bear.mp4) · [car](assets/videos/video_car.mp4) · [hike](assets/videos/video_hike.mp4) · [paragliding](assets/videos/video_paragliding.mp4)
 
 ## Installation
 
