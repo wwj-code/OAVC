@@ -22,4 +22,5 @@ ftfy
 regex
 imageio
 imageio-ffmpeg
+dashscope        # imported by the Wan2.1 code in video/
 # SAM3: install from https://github.com/facebookresearch/sam3
