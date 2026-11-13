@@ -6,5 +6,5 @@ python oavc/run_pie_bench.py \
   --save outputs/oavc_flux \
   --mapping_json data/PIE/mapping_file.json \
   --pie_img_root data/PIE/annotation_images \
-  --mask_cache_json data/PIE/sam3_mask_cache/mask_cache.json \
+  --mask_cache_json masks/pie_sam3/mask_cache.json \
   --fallback_full_mask "$@"

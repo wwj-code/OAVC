@@ -80,11 +80,13 @@ data/
 
 ## Image editing on PIE-Bench
 
-**1. Compute SAM3 object supports** (once per image, cached)
+**1. Object supports.** The SAM3 masks used in the paper are included in `masks/pie_sam3/` and are used by the run scripts below, so this step can be skipped. To compute them yourself:
 
 ```bash
-bash scripts/precompute_masks.sh
+bash scripts/precompute_masks.sh   # writes data/PIE/sam3_mask_cache; pass --mask_cache_json data/PIE/sam3_mask_cache/mask_cache.json to the run scripts
 ```
+
+Masks from a fresh SAM3 run can differ slightly from the released ones, so use the released masks to reproduce the paper numbers.
 
 **2. Run OAVC**
 
