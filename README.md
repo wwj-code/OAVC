@@ -111,6 +111,21 @@ bash video/scripts/run_bear_to_panda.sh
 
 Scripts for the four DAVIS sequences are in `video/scripts/`. The object support comes from the DAVIS ground-truth masks. Background metrics (BG-PSNR, BG-L1 and their flow-warped versions) are computed with `video/eval_davis_temporal_metrics.py`.
 
+## Interactive demo (brush)
+
+<p align="center">
+  <img src="assets/demo_brush.jpg" width="100%" alt="Interactive brush refinement">
+</p>
+
+A Gradio app for editing your own images. Upload an image, paint the object to edit with the brush, enter the source and target prompts and click **Run OAVC**. The brush is handy when the automatic object support misses part of the object or covers too much. With `--sam3_ckpt` you can also get the region from SAM3 by typing the object name, and merge it with the brush (union or intersection).
+
+```bash
+python demo/gradio_brush.py --model_type SD3                                         # brush only
+python demo/gradio_brush.py --model_type FLUX --sam3_ckpt checkpoints/sam3/sam3.pt   # brush + SAM3
+```
+
+Sampling and OAVC parameters default to the paper settings and can be changed in the app.
+
 ## Acknowledgements
 
 OAVC is built on [DNAEdit](https://github.com/xiechenxi99/DNAEdit_code). The video code is built on [Wan2.1](https://github.com/Wan-Video/Wan2.1) (Apache-2.0, see `video/wan/LICENSE.txt`). Object supports use [SAM3](https://github.com/facebookresearch/sam3), and evaluation follows [PIE-Bench](https://github.com/cure-lab/PnPInversion). We thank the authors for releasing their code.

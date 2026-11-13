@@ -312,24 +312,24 @@ class MetricsCalculator:
 
     def calculate_clip_similarity(self, img, txt, mask=None):
         """
-        img: PIL.Image 或 numpy array (H,W,3), uint8
+        img: PIL.Image or numpy array (H,W,3), uint8
         txt: str
-        mask: 可选, (H,W,3) 或 (H,W,1) 的 0/1 mask
+        mask: optional 0/1 mask of shape (H,W,3) or (H,W,1)
         """
-        # 1. 转成 numpy
+        # 1. to numpy
         img = np.array(img)
 
-        # 2. 如果有 mask，先在像素空间把非编辑区域抹掉
+        # 2. if a mask is given, zero out pixels outside it
         if mask is not None:
             mask = np.array(mask)
-            # 确保 mask 形状是 (H,W,1) 或 (H,W,3)
+            # make sure the mask is (H,W,1) or (H,W,3)
             if mask.ndim == 2:
                 mask = mask[..., None]
             if mask.shape[2] == 1:
                 mask = np.repeat(mask, 3, axis=2)
-            img = img * mask  # 保留编辑区域 / 或者反之按你的定义来
+            img = img * mask  # keep the masked region
 
-        # 3. 再转回 PIL，交给 CLIPProcessor 做 resize + normalize
+        # 3. back to PIL; CLIPProcessor does resize + normalize
         pil_img = Image.fromarray(img.astype(np.uint8))
 
         inputs = self.clip_processor(
@@ -341,11 +341,11 @@ class MetricsCalculator:
 
         with torch.no_grad():
             outputs = self.clip_model(**inputs)
-            # 新版 CLIPModel 有 image_embeds / text_embeds
+            # newer CLIPModel versions return image_embeds / text_embeds
             image_embeds = outputs.image_embeds   # [1, D]
             text_embeds = outputs.text_embeds     # [1, D]
 
-            # L2 normalize，再做 cosine
+            # L2-normalize, then cosine
             image_embeds = F.normalize(image_embeds, dim=-1)
             text_embeds = F.normalize(text_embeds, dim=-1)
             score = (image_embeds * text_embeds).sum(dim=-1)  # [1]
