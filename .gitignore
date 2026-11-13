@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.DS_Store
+checkpoints/
+data/
+outputs/
+third_party/
+*.pt
+*.pth
+*.safetensors
+*.ckpt
+*.mp4

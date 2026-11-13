@@ -1,0 +1,25 @@
+# Tested with torch 2.x on a single 48GB GPU
+torch>=2.3
+torchvision
+diffusers>=0.30.1
+transformers
+accelerate
+sentencepiece
+protobuf
+numpy
+pillow
+opencv-python
+pyyaml
+tqdm
+pandas
+matplotlib
+torchmetrics
+lpips
+gradio
+einops
+easydict
+ftfy
+regex
+imageio
+imageio-ffmpeg
+# SAM3: install from https://github.com/facebookresearch/sam3
