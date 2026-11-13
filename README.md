@@ -2,7 +2,6 @@
 
 <p align="center">
   <a href="https://arxiv.org/abs/2609.06288"><img src="https://img.shields.io/badge/arXiv-2609.06288-b31b1b.svg" alt="arXiv"></a>
-  <a href="https://wwj-code.github.io"><img src="https://img.shields.io/badge/Homepage-wwj--code.github.io-blue.svg" alt="Homepage"></a>
 </p>
 
 Official implementation of **Object-Aware Velocity Control (OAVC)**, a training-free method for text-guided image and video editing with rectified-flow models (Stable Diffusion 3.5, FLUX.1-dev, Wan2.1).
