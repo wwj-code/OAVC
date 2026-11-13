@@ -576,7 +576,7 @@ def OAVC_FLUX(
     beta_max: float = 0.45,
     beta_pow: float = 2.0,
     # -------- Stage1 knobs --------
-    stage1_lambda_fg: float = 0.7,   # (补齐) 0 => original DNAEdit
+    stage1_lambda_fg: float = 0.7,   # 0 => original DNAEdit
     stage1_proj_bg: float = 0.0,     # mix-in bg-orth residual
     # -------- Stage2 knobs --------
     use_projected_injection: bool = True,

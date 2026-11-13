@@ -9,14 +9,14 @@ from sam3.model.sam3_image_processor import Sam3Processor
 class SAM3Helper:
     """
     - text prompt segmentation
-    - 支持 single-instance / multi-instance union (同一个 prompt 下的多实例)
-    - 支持多 prompt union（cat + dog / field + path 这种“不同类别”合并）
-    - 输出 latent 尺度 mask: [1,1,H_lat,W_lat] in [0,1]
+    - single-instance or multi-instance union (several instances of one prompt)
+    - union over several prompts (e.g. cat + dog, field + path)
+    - returns a latent-resolution mask [1,1,H_lat,W_lat] in [0,1]
 
-    关键修正：
-    - multi_instance=True 时默认不做 area_min_ratio 过滤（避免镜子里小目标被误杀）
-    - multi_instance=True 时建议 rank_mode="score"
-    - 支持显式设置 Sam3Processor 的 confidence_threshold
+    Notes:
+    - with multi_instance=True the area_min_ratio filter is off by default (keeps small instances)
+    - with multi_instance=True, rank_mode="score" is recommended
+    - the Sam3Processor confidence_threshold is set explicitly
     """
 
     def __init__(
@@ -24,7 +24,7 @@ class SAM3Helper:
         checkpoint_path: str,
         device: torch.device = torch.device("cuda"),
         load_from_HF: bool = False,
-        confidence_threshold: float = 0.05,   # ✅ 对齐你交互端的关键阈值
+        confidence_threshold: float = 0.05,   # same threshold as the interactive SAM3 demo
         resolution: int = 1008,
     ):
         self.device = device
@@ -37,7 +37,7 @@ class SAM3Helper:
         self.model.to(self.device)
         self.model.eval()
 
-        # ✅ 显式传入 confidence_threshold，避免默认 0.5 造成离线“什么都出不来”
+        # pass confidence_threshold explicitly (the default 0.5 often returns no mask)
         self.processor = Sam3Processor(
             self.model,
             resolution=resolution,
@@ -58,13 +58,13 @@ class SAM3Helper:
     def _select_instance_mask(
         masks: torch.Tensor,   # [N,H,W]  (bool or float)
         scores: torch.Tensor,  # [N]      (float)
-        score_thresh: float = 0.3,         # ✅ 你离线端的二次过滤阈值（不等于 processor 的 confidence_threshold）
-        area_min_ratio: float = 0.01,      # ✅ 只建议用于 single-instance
+        score_thresh: float = 0.3,         # second score filter (separate from the processor's confidence_threshold)
+        area_min_ratio: float = 0.01,      # meant for single-instance mode
         multi_instance: bool = False,
         max_instances: int = 1,            # None/-1 => all
-        rank_mode: str = None,             # None => auto: single 用 area_score, multi 用 score
+        rank_mode: str = None,             # None => auto: area_score for single, score for multi
         max_union_area_ratio: float = None,
-        disable_area_filter_in_multi: bool = True,  # ✅ 关键：multi 时不做 area filter
+        disable_area_filter_in_multi: bool = True,  # no area filter in multi-instance mode
         score_range=None,
     ):
         if masks.dim() != 3:
@@ -77,11 +77,11 @@ class SAM3Helper:
         scores = scores.float().view(-1)[:N]
         probs = masks.float()
 
-        # 1) score filter（你的离线阈值）
+        # 1) score filter
         # keep = scores > float(score_thresh)
         
-        # 1) score filter (支持区间)
-        # score_range: (low, high) 其中任何一个为 None 表示不限制
+        # 1) score filter (optionally a range)
+        # score_range: (low, high); None on either side means no bound
         if score_range is not None:
             low, high = score_range
             keep = torch.ones_like(scores, dtype=torch.bool)
@@ -104,7 +104,7 @@ class SAM3Helper:
         if probs.numel() == 0:
             return None
 
-        # 2) area filter（⚠️ multi_instance 时默认关闭）
+        # 2) area filter (off by default in multi-instance mode)
         areas = probs.flatten(1).sum(dim=1)
 
         do_area_filter = True
@@ -120,15 +120,15 @@ class SAM3Helper:
             areas = areas[keep2]
             scores_final = scores_kept[keep2]
         else:
-            scores_final = scores_kept  # 保留全部（只按 score_thresh 过滤）
+            scores_final = scores_kept  # keep all (score_thresh only)
 
         K = probs.shape[0]
         if K == 0:
             return None
 
-        # 3) rank_mode 默认策略
+        # 3) default rank_mode
         if rank_mode is None:
-            # single-instance：用 area_score 稳一点；multi：用 score 更像交互端（小目标不吃亏）
+            # single-instance: area_score; multi-instance: score (does not penalise small objects)
             rank_mode = "score" if multi_instance else "area_score"
 
         rank = SAM3Helper._compute_rank(areas, scores_final, rank_mode)
@@ -149,7 +149,7 @@ class SAM3Helper:
         sel = order[:topk]
         union = probs[sel].sum(dim=0).clamp(0.0, 1.0)  # [H,W]
 
-        # optional: union 面积上限（建议先别开，容易把镜子猫挤掉）
+        # optional cap on the union area (off by default)
         if max_union_area_ratio is not None and float(max_union_area_ratio) > 0:
             union_area = float(union.sum().item())
             max_area = float(max_union_area_ratio) * float(H * W)
@@ -258,8 +258,8 @@ class SAM3Helper:
         disable_area_filter_in_multi: bool = True,
     ):
         """
-        多 prompt union：例如 ["cat","dog"] 或 ["field","path"]
-        返回：union 后的 [1,1,H_lat,W_lat]
+        Union over several prompts, e.g. ["cat","dog"] or ["field","path"].
+        Returns the union mask [1,1,H_lat,W_lat].
         """
         if not isinstance(text_prompts, (list, tuple)) or len(text_prompts) == 0:
             return None
