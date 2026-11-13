@@ -11,3 +11,4 @@ third_party/
 *.safetensors
 *.ckpt
 *.mp4
+!assets/videos/*.mp4
