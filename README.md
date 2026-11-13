@@ -1,16 +1,46 @@
 # OAVC: Object-Aware Background-Controlled Editing via Weighted Velocity Guidance
 
-Official implementation of **Object-Aware Velocity Control (OAVC)**, a training-free method for text-guided image and video editing with rectified-flow models.
+<p align="center">
+  <a href="https://arxiv.org/abs/2609.06288"><img src="https://img.shields.io/badge/arXiv-2609.06288-b31b1b.svg" alt="arXiv"></a>
+  <a href="https://wwj-code.github.io"><img src="https://img.shields.io/badge/Homepage-wwj--code.github.io-blue.svg" alt="Homepage"></a>
+</p>
 
-> **Object-Aware Background-Controlled Editing via Weighted Velocity Guidance**
-> Wuji Wang, Yue Wu, Chenhao Yi, Shuhui Wang
+Official implementation of **Object-Aware Velocity Control (OAVC)**, a training-free method for text-guided image and video editing with rectified-flow models (Stable Diffusion 3.5, FLUX.1-dev, Wan2.1).
+
+> **Object-Aware Background-Controlled Editing via Weighted Velocity Guidance**<br>
+> Wuji Wang, Yue Wu, Chenhao Yi, Shuhui Wang<br>
 > [arXiv:2609.06288](https://arxiv.org/abs/2609.06288)
 
 <p align="center">
-  <img src="assets/oavc_pipeline.jpg" width="90%" alt="Overview of OAVC">
+  <img src="assets/teaser.jpg" width="100%" alt="OAVC teaser: image and video editing">
 </p>
 
-OAVC controls **where** and **how** the edit is injected. Stage 1 builds a background-anchored reference under the source prompt. Stage 2 injects the target-prompt velocity change only inside an object support (from SAM3), with a time-varying boundary ring, a constrained (projected) injection, a confidence gate and a boundary high-pass. It works with Stable Diffusion 3.5, FLUX.1-dev and Wan2.1.
+OAVC edits the target object while keeping the rest of the image or video unchanged. Global velocity editors (e.g. DNAEdit) let the background drift, distort reflections and flicker over time; OAVC keeps them stable.
+
+## Method
+
+<p align="center">
+  <img src="assets/pipeline.jpg" width="100%" alt="Overview of OAVC">
+</p>
+
+Velocity-based editors apply the prompt-induced velocity change to the whole latent, which makes non-target regions drift along the sampling trajectory **(a)**. OAVC controls **where** and **how** the edit is injected:
+
+- **Stage 1** builds a background-anchored reference under the source prompt, relaxing foreground alignment and suppressing background residuals **(b)**.
+- **Stage 2** injects the target-prompt velocity change only inside an object support (from SAM3), with an interior weight, a time-varying boundary ring, a projected (constrained) injection, a confidence gate and a boundary high-pass **(c)**.
+
+## Results
+
+**Image editing on PIE-Bench** (SD3.5 and FLUX.1-dev)
+
+<p align="center">
+  <img src="assets/pie_comparison.jpg" width="100%" alt="Qualitative comparison on PIE-Bench">
+</p>
+
+**Video editing on DAVIS** (Wan2.1-T2V-1.3B)
+
+<p align="center">
+  <img src="assets/video_davis.jpg" width="100%" alt="Video editing results on DAVIS">
+</p>
 
 ## Installation
 
