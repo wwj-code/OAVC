@@ -39,8 +39,21 @@ Velocity-based editors apply the prompt-induced velocity change to the whole lat
 **Video editing on DAVIS** (Wan2.1-T2V-1.3B)
 
 <p align="center">
-  <img src="assets/video_davis.jpg" width="100%" alt="Video editing results on DAVIS">
+  <img src="assets/videos/video_bear.gif" width="80%" alt="DAVIS bear: brown bear to panda"><br>
+  <em>"A large brown bear ..." → "A large panda ..."</em>
 </p>
+
+<p align="center">
+  <img src="assets/videos/video_car.gif" width="80%" alt="DAVIS car-roundabout: dark gray car to yellow taxi"><br>
+  <em>"A dark gray car ..." → "A yellow taxi ..."</em>
+</p>
+
+<p align="center">
+  <img src="assets/videos/video_hike.gif" width="80%" alt="DAVIS hike: man to woman"><br>
+  <em>"A man is hiking on the rock." → "A woman is hiking on the rock"</em>
+</p>
+
+Full-quality MP4s: [bear](assets/videos/video_bear.mp4) · [car](assets/videos/video_car.mp4) · [hike](assets/videos/video_hike.mp4)
 
 ## Installation
 
