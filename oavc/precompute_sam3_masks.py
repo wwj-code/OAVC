@@ -185,6 +185,9 @@ def main():
 
     # optional: only process a comma-separated subset of sample ids (for quick tests)
     parser.add_argument("--only_ids", type=str, default=None)
+    # optional: JSON {sample_id: "prompt" or ["prompt", ...]} with hand-picked SAM3 object prompts.
+    # They are tried before the automatic prompts, and these samples are always recomputed.
+    parser.add_argument("--prompt_overrides", type=str, default=None)
 
     args = parser.parse_args()
 
@@ -207,6 +210,12 @@ def main():
         keep = set(s.strip() for s in args.only_ids.split(",") if s.strip())
         dataset_dict = {k: v for k, v in dataset_dict.items() if k in keep}
 
+    prompt_overrides: Dict[str, List[str]] = {}
+    if args.prompt_overrides:
+        with open(args.prompt_overrides, "r", encoding="utf-8") as f:
+            for k, v in json.load(f).items():
+                prompt_overrides[str(k)] = [v] if isinstance(v, str) else list(v)
+
     # load SAM3 once
     sam3_helper = SAM3Helper(checkpoint_path=args.sam3_ckpt, device=device)
 
@@ -224,7 +233,7 @@ def main():
 
         out_pt = os.path.join(masks_dir, f"{sample_id}.pt")
 
-        if args.skip_existing and os.path.exists(out_pt):
+        if args.skip_existing and os.path.exists(out_pt) and sample_id not in prompt_overrides:
             # still ensure json has entry
             if sample_id not in cache:
                 cache[sample_id] = {
@@ -255,6 +264,9 @@ def main():
         W_lat = W_img // args.latent_downsample
 
         sam3_prompts = build_sam3_prompt_list(src_prompt, tar_prompt)
+        if sample_id in prompt_overrides:
+            user_prompts = prompt_overrides[sample_id]
+            sam3_prompts = user_prompts + [p for p in sam3_prompts if p not in user_prompts]
 
         edit_mask = None
         chosen_prompt = None

@@ -86,6 +86,15 @@ data/
 bash scripts/precompute_masks.sh
 ```
 
+The SAM3 text prompt is derived automatically from the source/target prompts, so some supports can be wrong (e.g. small parts, pose or style edits, or a full-image fallback when SAM3 finds nothing). Check `chosen_sam3_prompt` and `fallback_full_mask_used` in `data/PIE/sam3_mask_cache/mask_cache.json`. For a sample with a poor support, choose the object prompt yourself according to the edit, and recompute only those samples:
+
+```bash
+# prompts.json: {"000000000108": "cat", "813000000001": ["fire", "flames"]}
+bash scripts/precompute_masks.sh --prompt_overrides prompts.json --only_ids 000000000108,813000000001
+```
+
+To inspect or refine the region for a single image interactively, use the [interactive demo](#interactive-demo-brush) (SAM3 text prompt and/or brush).
+
 **2. Run OAVC**
 
 ```bash

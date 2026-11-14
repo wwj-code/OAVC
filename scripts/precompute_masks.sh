@@ -7,4 +7,4 @@ python oavc/precompute_sam3_masks.py \
   --sam3_ckpt checkpoints/sam3/sam3.pt \
   --mask_cache_dir data/PIE/sam3_mask_cache \
   --sam3_max_try 20 \
-  --fallback_full_mask
+  --fallback_full_mask "$@"
