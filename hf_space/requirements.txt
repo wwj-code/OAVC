@@ -1,0 +1,9 @@
+torch
+diffusers>=0.30.1
+transformers
+accelerate
+sentencepiece
+protobuf
+numpy
+pillow
+spaces
