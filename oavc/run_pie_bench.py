@@ -129,6 +129,8 @@ def main():
                 mask_path = entry["mask_path"]
                 if args.mask_cache_root is not None:
                     mask_path = os.path.join(args.mask_cache_root, "masks", os.path.basename(mask_path))
+                elif not os.path.isabs(mask_path):  # relative to the cache json (e.g. masks/pie_sam3)
+                    mask_path = os.path.join(os.path.dirname(os.path.abspath(args.mask_cache_json)), mask_path)
                 if os.path.exists(mask_path):
                     edit_mask = torch.load(mask_path, map_location="cpu").float().to(device)
             if edit_mask is None and args.fallback_full_mask:
